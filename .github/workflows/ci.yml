@@ -22,7 +22,9 @@ jobs:
       - name: Install dependencies
         run: dotnet restore
       - name: Build
-        run: dotnet msbuild -noLogo -m -graph -isolate  -p:Configuration=${{ matrix.configuration }} -bl:artifacts/log/build.binlog
+        run: dotnet msbuild -noLogo -m -p:Configuration=${{ matrix.configuration }} -bl:artifacts/log/build.binlog
+      - name: Test
+        run: dotnet test -noLogo --no-restore --blame-hang --blame-hang-timeout 300s --blame-crash -d artifacts/TestResults/tests.log -r artifacts/TestResults --collect:"XPlat Code Coverage"
       - name: Upload Results
         uses: actions/upload-artifact@v2
         with:
@@ -30,4 +32,5 @@ jobs:
           path: |
             ./artifacts/bin/**/*
             ./artifacts/log/**/*
+            ./artifacts/TestResults/**/*
           if-no-files-found: error
